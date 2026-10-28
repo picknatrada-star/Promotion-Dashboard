@@ -85,7 +85,7 @@ input:focus,select:focus{outline:3px solid var(--tj);outline-offset:1px}
 
 <div class="wrap">
   <div class="top">
-    <h1>Head-to-Head · ฟอร์มพนักงาน</h1>
+    <h1>เทียบคู่แข่ง · ฟอร์มพนักงาน</h1>
     <div class="steps" id="steps"><i></i><i></i><i></i><i></i></div>
     <div class="stepname" id="stepname"></div>
   </div>
@@ -190,7 +190,7 @@ $('prev').onclick=()=>go(S.step-1);
 $('next').onclick=()=>{
   if(S.step<3)return go(S.step+1);
   const c=counts();let tj=0,cp=0;BASKET.forEach((_,i)=>{const p=S.price[i]||{};tj+=+p.tj||0;cp+=+p.cp||0});
-  const t=`Head-to-Head สาขา ${S.branch} vs ${S.comp} (${S.date})\nคะแนนเฉลี่ย เตือนใจ ${avg(S.tj)} / คู่แข่ง ${avg(S.cp)}\nราคาตะกร้า เตือนใจ ${tj.toFixed(2)} / คู่แข่ง ${cp.toFixed(2)}\nรอจ่ายเงิน ${S.wait.tj||'-'} / ${S.wait.cp||'-'} นาที\nกรอกแล้ว: คะแนน ${c.sc}/36, รูป ${c.ph}/36, ราคา ${c.pr}/10`;
+  const t=`เทียบคู่แข่ง สาขา ${S.branch} vs ${S.comp} (${S.date})\nคะแนนเฉลี่ย เตือนใจ ${avg(S.tj)} / คู่แข่ง ${avg(S.cp)}\nราคาตะกร้า เตือนใจ ${tj.toFixed(2)} / คู่แข่ง ${cp.toFixed(2)}\nรอจ่ายเงิน ${S.wait.tj||'-'} / ${S.wait.cp||'-'} นาที\nกรอกแล้ว: คะแนน ${c.sc}/36, รูป ${c.ph}/36, ราคา ${c.pr}/10`;
   const m=$('copyMsg');
   (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{m.textContent='คัดลอกแล้ว นำไปวางส่งในไลน์หรืออีเมลได้'},()=>{m.textContent=t;m.style.whiteSpace='pre-wrap'});
 };

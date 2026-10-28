@@ -128,10 +128,10 @@ header p{color:var(--muted);font-size:.9rem}
 <div class="wrap">
   <header>
     <div>
-      <h1>Survey Hub · Admin</h1>
-      <p>ผลเทียบสาขาเตือนใจกับคู่แข่ง (Head-to-Head)</p>
+      <h1>Survey Hub · ผู้ดูแล</h1>
+      <p>ผลเทียบสาขาเตือนใจกับคู่แข่ง</p>
     </div>
-    <nav class="links" aria-label="ลิงก์ลัด"><a href="#" onclick="return false">Survey hub</a><a href="#" onclick="return false">Customer form</a></nav>
+    <nav class="links" aria-label="ลิงก์ลัด"><a href="#" onclick="return false">หน้าหลักสำรวจ</a><a href="#" onclick="return false">แบบฟอร์มลูกค้า</a></nav>
   </header>
 
   <div class="sample">ข้อมูลในหน้านี้เป็นตัวอย่างเพื่อดูรูปแบบ ยังไม่ได้เชื่อมกับข้อมูลจริงของ Survey Hub</div>
@@ -175,7 +175,7 @@ BR.sort((a,b)=>b.gap-a.gap);
 const f2=x=>x.toFixed(2), $=id=>document.getElementById(id);
 let cur=BR[0].id, flt='all';
 
-$('kpis').innerHTML=[['Head-to-Head','4','ส่งแล้วเดือนนี้'],['เยี่ยมสาขา','1','ส่งแล้วเดือนนี้'],['เสียงลูกค้า','3','ตอบกลับเดือนนี้'],['คะแนนสาขาเฉลี่ย','3.85','จาก 5 คะแนน']]
+$('kpis').innerHTML=[['เทียบคู่แข่ง','4','ส่งแล้วเดือนนี้'],['เยี่ยมสาขา','1','ส่งแล้วเดือนนี้'],['เสียงลูกค้า','3','ตอบกลับเดือนนี้'],['คะแนนสาขาเฉลี่ย','3.85','จาก 5 คะแนน']]
  .map(([l,v,s])=>`<div class="kpi"><div class="l">${l}</div><div class="v num">${v}</div><div class="s">${s}</div></div>`).join('');
 
 function renderList(){
@@ -195,7 +195,7 @@ function renderDetail(){
    <button class="back" id="back">← กลับไปรายชื่อสาขา</button>
    <div class="dh"><h2>สาขา ${b.id}</h2><span class="pill ${b.st[0]}">${b.st[1]}</span></div>
    <div class="meta"><span>ผู้ซื้อตัวอย่าง ${b.shop} คน</span><span>ข้อมูลครบ ${b.done}%</span><span>ความมั่นใจ: ${b.conf}</span><span>${b.dates}</span></div>
-   <div class="vs"><div class="side tj"><div class="big num t">${f2(b.ta)}</div><div class="of">จาก 5 คะแนน</div><div class="who t">เตือนใจ</div></div><div class="x">VS</div>
+   <div class="vs"><div class="side tj"><div class="big num t">${f2(b.ta)}</div><div class="of">จาก 5 คะแนน</div><div class="who t">เตือนใจ</div></div><div class="x">เทียบ</div>
      <div class="side cp"><div class="big num c">${f2(b.ca)}</div><div class="of">จาก 5 คะแนน</div><div class="who c">คู่แข่ง</div></div></div>
    <div class="facts">
      <div class="fact"><div class="l">ชนะ / แพ้ / เสมอ</div><div class="v num">${b.w} / ${b.l} / ${b.e}</div><div class="s">จาก ${b.crit.length} หัวข้อ</div></div>
