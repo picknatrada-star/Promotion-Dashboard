@@ -1,0 +1,199 @@
+<title>Survey Hub ฟอร์มพนักงาน</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: ฟอร์ม 4 ขั้นตอนทีละหน้าจอ (มือถือเป็นหลัก) แถบความคืบหน้าติดด้านบน ปุ่มถัดไปติดด้านล่าง */
+:root{
+  --bg:#eef3f1; --surface:#ffffff; --surface2:#f4f8f6; --line:#d8e2de;
+  --fg:#14231d; --muted:#5b6f67;
+  --tj:#0f7a4a; --tj-soft:#dcf1e6; --on-tj:#ffffff;
+  --cp:#b36b00; --cp-soft:#fbebcf;
+  --bad:#b3261e; --bad-soft:#fbe1de; --good:#0f7a4a;
+  --track:#e3ebe7;
+  --font:'IBM Plex Sans Thai','Noto Sans Thai',system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e1714; --surface:#16221d; --surface2:#1b2a24; --line:#2a3d35;
+  --fg:#e6f0eb; --muted:#9bb2a8; --tj:#4fcf93; --tj-soft:#173a2a; --on-tj:#07150e;
+  --cp:#f0a840; --cp-soft:#3d2d10; --bad:#ff8a80; --bad-soft:#3d1d1a; --good:#4fcf93; --track:#25362e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1714; --surface:#16221d; --surface2:#1b2a24; --line:#2a3d35;
+  --fg:#e6f0eb; --muted:#9bb2a8; --tj:#4fcf93; --tj-soft:#173a2a; --on-tj:#07150e;
+  --cp:#f0a840; --cp-soft:#3d2d10; --bad:#ff8a80; --bad-soft:#3d1d1a; --good:#4fcf93; --track:#25362e; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:16px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 110px}
+.wrap{max-width:720px;margin:0 auto}
+h1,h2,h3,p{margin:0}
+button,input,select{font:inherit;color:inherit}
+.num{font-variant-numeric:tabular-nums}
+
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding:12px 0 10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
+.top h1{font-size:1.15rem;font-weight:700}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
+.steps i{height:6px;border-radius:4px;background:var(--track)}
+.steps i.on{background:var(--tj)}
+.stepname{font-size:.85rem;color:var(--muted);margin-top:6px}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px}
+.card h2{font-size:1.1rem;font-weight:700;margin-bottom:4px}
+.hint{color:var(--muted);font-size:.9rem}
+label.f{display:block;font-weight:600;margin:14px 0 6px}
+input[type=text],input[type=number],input[type=date],select{width:100%;min-height:48px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface);font-size:16px}
+input:focus,select:focus{outline:3px solid var(--tj);outline-offset:1px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+.crit{border-top:1px solid var(--line);padding-top:14px;margin-top:14px}
+.crit:first-of-type{border-top:0;margin-top:8px;padding-top:0}
+.crit h3{font-size:1rem;font-weight:600;margin-bottom:8px}
+.crit h3 small{color:var(--muted);font-weight:400}
+.store{border-radius:12px;padding:10px;margin-bottom:8px}
+.store.tj{background:var(--tj-soft)} .store.cp{background:var(--cp-soft)}
+.store .nm{font-size:.85rem;font-weight:600;margin-bottom:6px}
+.store.tj .nm{color:var(--tj)} .store.cp .nm{color:var(--cp)}
+.rate{display:grid;grid-template-columns:repeat(5,1fr) auto;gap:6px;align-items:center}
+.rate button{min-height:48px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-weight:700;font-size:1.05rem;cursor:pointer}
+.rate button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.photo{min-height:48px;min-width:48px;border-radius:10px;border:1px dashed var(--muted);background:var(--surface);cursor:pointer;overflow:hidden;padding:0;display:flex;align-items:center;justify-content:center;font-size:1.3rem}
+.photo.has{border:2px solid var(--good)}
+.photo img{width:48px;height:48px;object-fit:cover;display:block}
+.lbls{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted);margin:2px 56px 0 2px}
+
+.item{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px;padding:12px 0;border-top:1px solid var(--line)}
+.item:first-of-type{border-top:0}
+.item .n{grid-column:1/-1;font-weight:600}
+.item label{font-size:.8rem;color:var(--muted)}
+
+.err{background:var(--bad-soft);color:var(--bad);border-radius:12px;padding:12px 14px;margin-bottom:14px;font-weight:500}
+.sum{display:grid;gap:8px;margin-top:12px}
+.sum div{display:flex;justify-content:space-between;gap:12px;background:var(--surface2);border-radius:10px;padding:10px 12px}
+.sum b{text-align:right}
+.btn{min-height:50px;border-radius:12px;border:1px solid var(--line);background:var(--surface);padding:0 20px;font-weight:600;cursor:pointer}
+.btn.p{background:var(--tj);color:var(--on-tj);border-color:var(--tj)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line);
+  padding:10px max(16px,env(safe-area-inset-left,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-right,0px))}
+.bar .in{max-width:720px;margin:0 auto;display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center}
+.prog{font-size:.85rem;color:var(--muted);grid-column:1/-1}
+.saved{font-size:.8rem;color:var(--muted)}
+:focus-visible{outline:3px solid var(--tj);outline-offset:2px}
+@media (max-width:380px){.rate{grid-template-columns:repeat(5,1fr)} .rate .photo{grid-column:1/-1;width:100%}.lbls{margin-right:2px}}
+</style>
+
+<div class="wrap">
+  <div class="top">
+    <h1>Head-to-Head · ฟอร์มพนักงาน</h1>
+    <div class="steps" id="steps"><i></i><i></i><i></i><i></i></div>
+    <div class="stepname" id="stepname"></div>
+  </div>
+  <main id="page"></main>
+</div>
+
+<div class="bar"><div class="in">
+  <div class="prog num" id="prog"></div>
+  <button class="btn" id="prev">ย้อนกลับ</button>
+  <button class="btn p" id="next">ถัดไป</button>
+</div></div>
+
+<input type="file" accept="image/*" capture="environment" id="file" hidden>
+
+<script>
+const CRIT=['ความสะอาดหน้าร้าน','ป้ายและการมองเห็นหน้าร้าน','ความสว่างในร้าน','การจัดเรียงสินค้า','สินค้าครบไม่ขาดชั้น','ป้ายราคาชัดเจน','โปรโมชั่นเห็นชัด','ความสดของสินค้า','ความสะอาดห้องน้ำ','พนักงานทักทาย','พนักงานแนะนำสินค้า','ความเร็วแคชเชียร์','ช่องทางชำระเงิน','ที่จอดรถ','อุณหภูมิในร้าน','ทางเดินกว้างสบาย','ความหลากหลายสินค้า','บริการหลังชำระเงิน'];
+const BASKET=['น้ำดื่ม 600 มล.','ข้าวสาร 5 กก.','น้ำมันพืช 1 ลิตร','น้ำตาลทราย 1 กก.','ไข่ไก่ 10 ฟอง','นมกล่อง UHT','ผงซักฟอก 1 กก.','น้ำยาล้างจาน','กระดาษทิชชู่ 6 ม้วน','บะหมี่กึ่งสำเร็จรูป 5 ซอง'];
+const STEPS=['ข้อมูลการไปเยี่ยม','ให้คะแนนและถ่ายรูป','เปรียบเทียบราคา','ตรวจทานและส่ง'];
+const KEY='h2h-draft-v1';
+let S={step:0,branch:'',comp:'',date:new Date().toISOString().slice(0,10),tj:{},cp:{},price:{},wait:{tj:'',cp:''},visit:{tj:'',cp:''}};
+const photos={}; // เก็บรูปไว้ในหน้านี้เท่านั้น (ไม่เก็บลงเครื่อง)
+let showErr=false;
+try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(d)S=Object.assign(S,d)}catch(e){}
+const $=id=>document.getElementById(id);
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+
+function counts(){
+  const sc=Object.keys(S.tj).length+Object.keys(S.cp).length;
+  const ph=Object.keys(photos).length;
+  const pr=BASKET.filter((_,i)=>S.price[i]&&S.price[i].tj&&S.price[i].cp).length;
+  return{sc,ph,pr};
+}
+function missing(){
+  const c=counts(),m=[];
+  if(!S.branch.trim())m.push('รหัสสาขาเตือนใจ');
+  if(!S.comp.trim())m.push('ชื่อคู่แข่ง');
+  if(c.sc<36)m.push(`คะแนนอีก ${36-c.sc} ช่อง`);
+  if(c.ph<36)m.push(`รูปถ่ายอีก ${36-c.ph} รูป`);
+  if(c.pr<10)m.push(`ราคาอีก ${10-c.pr} รายการ`);
+  return m;
+}
+function rateRow(side,i){
+  const v=S[side][i],k=side+i;
+  return `<div class="rate">${[1,2,3,4,5].map(n=>`<button data-r="${side}|${i}|${n}" aria-pressed="${v===n}" aria-label="${n} คะแนน">${n}</button>`).join('')}
+  <button class="photo ${photos[k]?'has':''}" data-p="${k}" aria-label="ถ่ายรูปหลักฐาน">${photos[k]?`<img src="${photos[k]}" alt="">`:'📷'}</button></div>`;
+}
+function render(){
+  document.querySelectorAll('#steps i').forEach((e,i)=>e.classList.toggle('on',i<=S.step));
+  $('stepname').textContent=`ขั้นที่ ${S.step+1} จาก 4 · ${STEPS[S.step]}`;
+  const c=counts();
+  $('prog').textContent=`คะแนน ${c.sc}/36 · รูป ${c.ph}/36 · ราคา ${c.pr}/10`;
+  $('prev').style.visibility=S.step?'visible':'hidden';
+  $('next').textContent=S.step===3?'คัดลอกผลสรุป':'ถัดไป';
+  let h='';
+  if(S.step===0) h=`<div class="card"><h2>ไปเยี่ยมคู่ร้านเดียวกันในวันเดียว</h2>
+    <p class="hint">ไปร้านเตือนใจและร้านคู่แข่งในวันเดียวกัน ห่างกันไม่เกิน 2 ชั่วโมง</p>
+    <label class="f" for="branch">รหัสสาขาเตือนใจ</label><input id="branch" type="text" inputmode="numeric" placeholder="เช่น 031" value="${S.branch}">
+    <label class="f" for="comp">ชื่อคู่แข่ง</label><input id="comp" type="text" placeholder="ชื่อร้านและที่ตั้ง" value="${S.comp}">
+    <label class="f" for="date">วันที่ไปเยี่ยม</label><input id="date" type="date" value="${S.date}">
+    <div class="two"><div><label class="f" for="vt">เวลาถึงร้านเตือนใจ</label><input id="vt" type="time" value="${S.visit.tj}" style="width:100%;min-height:48px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface);font-size:16px"></div>
+    <div><label class="f" for="vc">เวลาถึงร้านคู่แข่ง</label><input id="vc" type="time" value="${S.visit.cp}" style="width:100%;min-height:48px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface);font-size:16px"></div></div></div>`;
+  if(S.step===1) h=`<div class="card"><h2>ให้คะแนน 1-5 ทั้งสองร้าน</h2><p class="hint">1 = แย่มาก · 5 = ดีมาก ทุกหัวข้อต้องมีรูปหลักฐานร้านละ 1 รูป แตะ 📷 เพื่อถ่าย ร่างบันทึกอัตโนมัติ</p>
+    ${CRIT.map((n,i)=>`<div class="crit"><h3>${i+1}. ${n}</h3>
+      <div class="store tj"><div class="nm">เตือนใจ</div>${rateRow('tj',i)}</div>
+      <div class="store cp"><div class="nm">คู่แข่ง</div>${rateRow('cp',i)}</div></div>`).join('')}</div>`;
+  if(S.step===2) h=`<div class="card"><h2>ราคาสินค้า 10 รายการ</h2><p class="hint">ใส่ราคาที่ป้ายขายจริง (บาท) ถ้าไม่มีขายให้ใส่ 0</p>
+    ${BASKET.map((n,i)=>`<div class="item"><div class="n">${i+1}. ${n}</div>
+      <div><label for="pt${i}">เตือนใจ</label><input id="pt${i}" data-pr="tj|${i}" type="number" inputmode="decimal" min="0" step="0.01" value="${(S.price[i]||{}).tj??''}"></div>
+      <div><label for="pc${i}">คู่แข่ง</label><input id="pc${i}" data-pr="cp|${i}" type="number" inputmode="decimal" min="0" step="0.01" value="${(S.price[i]||{}).cp??''}"></div></div>`).join('')}</div>
+    <div class="card"><h2>เวลารอจ่ายเงิน (นาที)</h2>
+    <div class="two"><div><label class="f" for="wt">เตือนใจ</label><input id="wt" type="number" inputmode="decimal" min="0" step="0.25" value="${S.wait.tj}"></div>
+    <div><label class="f" for="wc">คู่แข่ง</label><input id="wc" type="number" inputmode="decimal" min="0" step="0.25" value="${S.wait.cp}"></div></div></div>`;
+  if(S.step===3){
+    const m=missing(),av=a=>{const v=Object.values(a);return v.length?(v.reduce((s,x)=>s+x,0)/v.length).toFixed(2):'-'};
+    let tj=0,cp=0;BASKET.forEach((_,i)=>{const p=S.price[i]||{};tj+=+p.tj||0;cp+=+p.cp||0});
+    h=(m.length?`<div class="err">ยังไม่ครบ: ${m.join(' · ')}</div>`:`<div class="card" style="background:var(--tj-soft)"><h2>ข้อมูลครบแล้ว</h2></div>`)+
+    `<div class="card"><h2>สรุป</h2><div class="sum">
+      <div><span>สาขา / คู่แข่ง</span><b>${S.branch||'-'} / ${S.comp||'-'}</b></div>
+      <div><span>วันที่</span><b>${S.date}</b></div>
+      <div><span>คะแนนเฉลี่ย เตือนใจ</span><b class="num">${av(S.tj)}</b></div>
+      <div><span>คะแนนเฉลี่ย คู่แข่ง</span><b class="num">${av(S.cp)}</b></div>
+      <div><span>ราคาตะกร้ารวม เตือนใจ / คู่แข่ง</span><b class="num">${tj.toFixed(2)} / ${cp.toFixed(2)}</b></div>
+      <div><span>รอจ่ายเงิน เตือนใจ / คู่แข่ง</span><b class="num">${S.wait.tj||'-'} / ${S.wait.cp||'-'} นาที</b></div></div>
+      <p class="hint" style="margin-top:12px" id="copyMsg">หน้านี้ยังไม่ได้ต่อกับระบบรับข้อมูลของ Survey Hub กดคัดลอกผลสรุปเพื่อส่งต่อให้ทีมได้ก่อน รูปถ่ายยังไม่ถูกส่งไปด้วย</p></div>
+     <div class="card"><button class="btn" id="reset">เริ่มฟอร์มใหม่ (ล้างร่าง)</button></div>`;
+  }
+  $('page').innerHTML=h; bind();
+}
+function bind(){
+  const on=(id,fn)=>{const e=$(id);if(e)e.oninput=()=>{fn(e.value);save()}};
+  on('branch',v=>S.branch=v);on('comp',v=>S.comp=v);on('date',v=>S.date=v);on('vt',v=>S.visit.tj=v);on('vc',v=>S.visit.cp=v);on('wt',v=>S.wait.tj=v);on('wc',v=>S.wait.cp=v);
+  document.querySelectorAll('[data-pr]').forEach(e=>e.oninput=()=>{const[s,i]=e.dataset.pr.split('|');(S.price[i]=S.price[i]||{})[s]=e.value;save();$('prog').textContent=$('prog').textContent.replace(/ราคา \d+\/10/,`ราคา ${counts().pr}/10`)});
+  document.querySelectorAll('[data-r]').forEach(e=>e.onclick=()=>{const[s,i,n]=e.dataset.r.split('|');S[s][i]=+n;save();const y=scrollY;render();scrollTo(0,y)});
+  document.querySelectorAll('[data-p]').forEach(e=>e.onclick=()=>{pend=e.dataset.p;$('file').value='';$('file').click()});
+  const r=$('reset');if(r)r.onclick=()=>{try{localStorage.removeItem(KEY)}catch(e){}S={step:0,branch:'',comp:'',date:new Date().toISOString().slice(0,10),tj:{},cp:{},price:{},wait:{tj:'',cp:''},visit:{tj:'',cp:''}};Object.keys(photos).forEach(k=>delete photos[k]);render();scrollTo(0,0)};
+}
+let pend=null;
+$('file').onchange=ev=>{const f=ev.target.files[0];if(!f||!pend)return;const k=pend,rd=new FileReader();
+  rd.onload=()=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas'),s=Math.min(1,160/Math.max(im.width,im.height));c.width=im.width*s;c.height=im.height*s;c.getContext('2d').drawImage(im,0,0,c.width,c.height);photos[k]=c.toDataURL('image/jpeg',.7);const y=scrollY;render();scrollTo(0,y)};im.src=rd.result};rd.readAsDataURL(f)};
+function go(n){S.step=Math.max(0,Math.min(3,n));save();render();scrollTo(0,0)}
+$('prev').onclick=()=>go(S.step-1);
+$('next').onclick=()=>{
+  if(S.step<3)return go(S.step+1);
+  const c=counts();let tj=0,cp=0;BASKET.forEach((_,i)=>{const p=S.price[i]||{};tj+=+p.tj||0;cp+=+p.cp||0});
+  const t=`Head-to-Head สาขา ${S.branch} vs ${S.comp} (${S.date})\nคะแนนเฉลี่ย เตือนใจ ${avg(S.tj)} / คู่แข่ง ${avg(S.cp)}\nราคาตะกร้า เตือนใจ ${tj.toFixed(2)} / คู่แข่ง ${cp.toFixed(2)}\nรอจ่ายเงิน ${S.wait.tj||'-'} / ${S.wait.cp||'-'} นาที\nกรอกแล้ว: คะแนน ${c.sc}/36, รูป ${c.ph}/36, ราคา ${c.pr}/10`;
+  const m=$('copyMsg');
+  (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{m.textContent='คัดลอกแล้ว นำไปวางส่งในไลน์หรืออีเมลได้'},()=>{m.textContent=t;m.style.whiteSpace='pre-wrap'});
+};
+const avg=a=>{const v=Object.values(a);return v.length?(v.reduce((s,x)=>s+x,0)/v.length).toFixed(2):'-'};
+render();
+</script>
