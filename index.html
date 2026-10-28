@@ -67,6 +67,43 @@ tr:hover>td{background:#fafbff}
 .live-badge{background:#10b981;color:#fff;font-size:10px;padding:2px 7px;border-radius:10px;margin-left:8px;font-weight:700}
 .info-bar{background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#92400e}
 .urgent{background:#fee2e2;border:1px solid #fca5a5;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#991b1b;font-weight:600}
+/* MOBILE */
+@media(max-width:700px){
+body{font-size:15px;-webkit-text-size-adjust:100%}
+.hdr{flex-direction:column;align-items:stretch;gap:10px;padding:12px;position:static}
+.hdr h1,.hdr-left h1{font-size:17px}
+.hdr-kpi-row{overflow-x:auto;gap:8px;padding-bottom:2px}
+.hdr-kpi{flex:0 0 auto;min-width:96px;padding:8px 12px}
+.tabs{padding:0 6px;top:0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab-btn{padding:14px 14px;font-size:14px;min-height:46px}
+.panel,.tab-panel{padding:12px}
+.cards{grid-template-columns:1fr 1fr;gap:8px}
+.card{padding:10px}.card .val{font-size:17px}
+.forecast-box{gap:12px;padding:12px}
+.chart-row{grid-template-columns:1fr;gap:10px}
+.chart-h,.chart-sm,.chart-md{height:230px}
+.type-card{min-width:calc(50% - 6px)}
+.rm-grid,.action-grid{grid-template-columns:1fr}
+.rm-card{position:relative}.rm-card .rm-att,.rm-att{position:absolute;top:12px;right:12px;float:none;margin:0;font-size:20px}
+.rm-card .rm-name{padding-right:64px}
+.day-info{gap:12px}
+.date-range{gap:8px}.range-result{margin-left:0;width:100%}
+.filters{flex-direction:column;align-items:stretch}
+.filters select,.filters input,.date-range select{width:100%;font-size:16px;padding:10px;min-height:44px}
+.modal-box{padding:18px;width:94%;max-height:90vh;overflow:auto}
+.ai-btn{width:100%;justify-content:center;min-height:46px}
+/* tables -> cards */
+.tbl-wrap,.table-wrap{max-height:none;overflow:visible;background:none;box-shadow:none}
+table,tbody{display:block;width:100%}
+thead{display:none}
+tr{display:block;background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.08);margin-bottom:8px;padding:6px 12px}
+td{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:6px 0;border-bottom:1px solid #f1f5f9;text-align:right;font-size:13px}
+td:last-child{border-bottom:none}
+td[data-label]::before{content:attr(data-label);color:#64748b;font-size:12px;font-weight:600;text-align:left;flex:0 0 auto}
+td[colspan]{display:block;text-align:left}
+td[colspan]::before{display:none}
+}
 </style></head><body>
 <div class="hdr"><div><h1>📊 Promotion Dashboard <span class="live-badge">LIVE</span></h1><p>บริษัท เตือนใจ พาณิชย์ กรุ๊ป จำกัด | 203 สาขา | พฤษภาคม 2569</p></div><div class="hdr-kpi-row"><div class="hdr-kpi"><div class="val">฿10.9M</div><div class="lbl">ยอดโปร MTD</div></div><div class="hdr-kpi"><div class="val">74.5%</div><div class="lbl">%บรรลุเป้า</div></div><div class="hdr-kpi"><div class="val">28.6%</div><div class="lbl">GP%</div></div></div></div><div class="tabs">
 <button class="tab-btn active" onclick="showTab(0)">🎯 ภาพรวมโปรโมชั่น</button>
@@ -173,4 +210,10 @@ function renderBranch(){const rm=document.getElementById('bRM').value,st=documen
 function sortBranch(col){if(brSort.col===col)brSort.asc=!brSort.asc;else{brSort.col=col;brSort.asc=false;}renderBranch();}
 async function runAI(){const btn=document.getElementById('aiBtn'),res=document.getElementById('aiResult');btn.disabled=true;btn.textContent='⏳ กำลังวิเคราะห์...';res.style.display='none';try{const data={period:'พ.ค.2569(1-28พ.ค.)',total_promo_sales:10885423,monthly_target:14609088,attain_pct:74.5,days_remaining:3,gp_pct:28.6,forecast_attain:82.5,needed_avg_per_day:1241221,worst_types:[{type:'H',attain:36.1},{type:'Z',attain:45.5}],worst_rm:{name:'ฐานพัฒน์ แสงจง',attain:38.0},total_branches:203};const prompt=`คุณคือ Strategic Advisor C-level บริษัทค้าปลีก 203 สาขา มีเวลาเหลือ 3 วัน (29-31 พ.ค.) วิเคราะห์ SCQA และให้ Emergency Strategic Options 3 ตัวเลือก (A/B/C) เพื่อปิด gap ฿3,723,665 เปรียบกับ Lotus's/Big C ตอบภาษาไทย กระชับ`;const result=await window.cowork.askClaude(prompt,[JSON.stringify(data)]);res.textContent=result;res.style.display='block';btn.textContent='🔄 วิเคราะห์ใหม่';}catch(e){res.textContent='❌ '+e.message;res.style.display='block';btn.textContent='✨ วิเคราะห์เชิงกลยุทธ์ด้วย AI';}btn.disabled=false;}
 initCharts();
-</script></body></html>
+</script><script>
+/* label table cells for mobile card layout */
+(function(){function lab(t){var h=[].map.call(t.querySelectorAll('thead th'),function(x){return x.textContent.replace(/[⇅↑↓▲▼]/g,'').trim()});t.querySelectorAll('tbody tr').forEach(function(r){[].forEach.call(r.children,function(c,i){if(!c.hasAttribute('colspan')&&h[i]&&!c.dataset.label)c.dataset.label=h[i]})})}
+function init(){document.querySelectorAll('table').forEach(function(t){lab(t);new MutationObserver(function(){lab(t)}).observe(t.querySelector('tbody'),{childList:true})})}
+if(document.readyState!=='loading')init();else document.addEventListener('DOMContentLoaded',init)})();
+</script>
+</body></html>

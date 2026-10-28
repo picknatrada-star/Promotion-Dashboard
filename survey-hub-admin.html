@@ -1,0 +1,219 @@
+<title>Survey Hub Admin เตือนใจ</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: ภาพรวมตัวเลขด้านบน → ซ้ายรายชื่อสาขาเรียงตามความเร่งด่วน, ขวารายละเอียดสาขา (มือถือ: สลับเป็นหน้าเดียว) */
+:root{
+  --bg:#eef3f1; --surface:#ffffff; --surface2:#f4f8f6; --line:#d8e2de;
+  --fg:#14231d; --muted:#5b6f67;
+  --tj:#0f7a4a; --tj-soft:#dcf1e6;
+  --cp:#b36b00; --cp-soft:#fbebcf;
+  --bad:#b3261e; --bad-soft:#fbe1de; --warn:#8a5a00; --warn-soft:#fdf0cc; --good:#0f7a4a; --good-soft:#dcf1e6;
+  --track:#e3ebe7;
+  --font:'IBM Plex Sans Thai','Noto Sans Thai',system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e1714; --surface:#16221d; --surface2:#1b2a24; --line:#2a3d35;
+  --fg:#e6f0eb; --muted:#9bb2a8;
+  --tj:#4fcf93; --tj-soft:#173a2a;
+  --cp:#f0a840; --cp-soft:#3d2d10;
+  --bad:#ff8a80; --bad-soft:#3d1d1a; --warn:#f2c14e; --warn-soft:#3a2e0e; --good:#4fcf93; --good-soft:#173a2a;
+  --track:#25362e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1714; --surface:#16221d; --surface2:#1b2a24; --line:#2a3d35;
+  --fg:#e6f0eb; --muted:#9bb2a8;
+  --tj:#4fcf93; --tj-soft:#173a2a;
+  --cp:#f0a840; --cp-soft:#3d2d10;
+  --bad:#ff8a80; --bad-soft:#3d1d1a; --warn:#f2c14e; --warn-soft:#3a2e0e; --good:#4fcf93; --good-soft:#173a2a;
+  --track:#25362e; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:16px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 32px}
+.wrap{max-width:1240px;margin:0 auto}
+h1,h2,h3,p{margin:0}
+button{font:inherit;color:inherit}
+.num{font-variant-numeric:tabular-nums}
+
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:16px 0 8px}
+header h1{font-size:1.35rem;font-weight:700;letter-spacing:-.01em}
+header p{color:var(--muted);font-size:.9rem}
+.links{display:flex;gap:8px;flex-wrap:wrap}
+.links a{font-size:.9rem;font-weight:500;color:var(--fg);text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:9px 14px;border-radius:10px;min-height:44px;display:inline-flex;align-items:center}
+.links a:hover{border-color:var(--tj)}
+
+.sample{background:var(--warn-soft);color:var(--warn);border-radius:10px;padding:10px 14px;font-size:.88rem;margin:8px 0 16px}
+
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;min-width:0}
+.kpi .l{font-size:.85rem;color:var(--muted)}
+.kpi .v{font-size:2rem;font-weight:700;line-height:1.2;margin-top:2px}
+.kpi .s{font-size:.82rem;color:var(--muted)}
+
+.main{display:grid;grid-template-columns:minmax(300px,380px) 1fr;gap:20px;align-items:start}
+.list{display:flex;flex-direction:column;gap:10px;min-width:0}
+.sec-title{font-size:1.05rem;font-weight:700;margin-bottom:10px}
+.sec-sub{font-size:.85rem;color:var(--muted);font-weight:400}
+
+.bcard{width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;cursor:pointer;display:grid;grid-template-columns:1fr auto;gap:6px 12px;min-height:44px}
+.bcard:hover{border-color:var(--tj)}
+.bcard[aria-current="true"]{border-color:var(--tj);box-shadow:0 0 0 2px var(--tj-soft)}
+.bcard .name{font-weight:700;font-size:1.05rem}
+.bcard .scores{grid-column:1/-1;display:flex;align-items:baseline;gap:8px;font-size:.95rem}
+.bcard .scores b{font-size:1.25rem}
+.t{color:var(--tj)} .c{color:var(--cp)}
+.pill{display:inline-flex;align-items:center;font-size:.8rem;font-weight:600;padding:3px 10px;border-radius:99px;white-space:nowrap;justify-self:end}
+.p-bad{background:var(--bad-soft);color:var(--bad)} .p-warn{background:var(--warn-soft);color:var(--warn)} .p-good{background:var(--good-soft);color:var(--good)}
+.wlt{font-size:.85rem;color:var(--muted)}
+
+.detail{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;min-width:0}
+.back{display:none;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 14px;min-height:44px;cursor:pointer;margin-bottom:12px;font-weight:500}
+.dh{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start;margin-bottom:6px}
+.dh h2{font-size:1.5rem;font-weight:700}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 18px}
+.meta span{background:var(--surface2);border:1px solid var(--line);border-radius:8px;padding:4px 10px;font-size:.85rem;color:var(--muted)}
+
+.vs{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin-bottom:18px}
+.side{text-align:center;border-radius:14px;padding:14px 8px}
+.side.tj{background:var(--tj-soft)} .side.cp{background:var(--cp-soft)}
+.side .big{font-size:2.6rem;font-weight:700;line-height:1.1}
+.side .of{font-size:.8rem;color:var(--muted)}
+.side .who{font-weight:600;margin-top:4px}
+.vs .x{font-weight:700;color:var(--muted)}
+
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px}
+.fact{background:var(--surface2);border-radius:12px;padding:12px 14px;min-width:0}
+.fact .l{font-size:.82rem;color:var(--muted)}
+.fact .v{font-size:1.25rem;font-weight:700;line-height:1.35}
+.fact .s{font-size:.8rem;color:var(--muted)}
+
+.prio{list-style:none;margin:0 0 24px;padding:0;display:grid;gap:8px}
+.prio li{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;background:var(--bad-soft);border-radius:12px;padding:12px 14px}
+.prio .r{font-weight:700;color:var(--bad);font-size:1.1rem}
+.prio .gap{font-weight:700;color:var(--bad)}
+.prio .none{background:var(--good-soft);color:var(--good);display:block;font-weight:500}
+
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:8px 16px;cursor:pointer;min-height:40px;font-weight:500}
+.chip[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+
+.crit{display:grid;gap:8px}
+.row{background:var(--surface2);border-radius:12px;padding:12px 14px;display:grid;grid-template-columns:1fr auto;gap:6px 12px;min-width:0}
+.row .nm{font-weight:500;min-width:0}
+.bar{grid-column:1/-1;display:grid;grid-template-columns:auto 1fr auto;gap:4px 10px;align-items:center;font-size:.85rem}
+.bar .lb{color:var(--muted);width:4.2em}
+.trk{height:10px;border-radius:6px;background:var(--track);overflow:hidden}
+.trk i{display:block;height:100%;border-radius:6px}
+.trk.t i{background:var(--tj)} .trk.c i{background:var(--cp)}
+.bar .vv{font-weight:600;width:2.6em;text-align:right}
+
+.legend{display:flex;gap:14px;font-size:.85rem;color:var(--muted);margin-bottom:6px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
+
+@media (max-width:900px){
+  .kpis{grid-template-columns:1fr 1fr}
+  .main{grid-template-columns:1fr}
+  body[data-view="list"] .detail{display:none}
+  body[data-view="detail"] .list,body[data-view="detail"] .kpis,body[data-view="detail"] .sample{display:none}
+  .back{display:inline-flex;align-items:center}
+  .detail{padding:16px;border-radius:14px}
+  .facts{grid-template-columns:1fr}
+  .side .big{font-size:2.1rem}
+}
+@media (max-width:380px){.vs{grid-template-columns:1fr 1fr}.vs .x{display:none}}
+:focus-visible{outline:3px solid var(--tj);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Survey Hub · Admin</h1>
+      <p>ผลเทียบสาขาเตือนใจกับคู่แข่ง (Head-to-Head)</p>
+    </div>
+    <nav class="links" aria-label="ลิงก์ลัด"><a href="#" onclick="return false">Survey hub</a><a href="#" onclick="return false">Customer form</a></nav>
+  </header>
+
+  <div class="sample">ข้อมูลในหน้านี้เป็นตัวอย่างเพื่อดูรูปแบบ ยังไม่ได้เชื่อมกับข้อมูลจริงของ Survey Hub</div>
+
+  <section class="kpis" id="kpis" aria-label="สรุปเดือนนี้"></section>
+
+  <div class="main">
+    <section class="list" aria-label="สาขา">
+      <div>
+        <h2 class="sec-title">สาขาเทียบคู่แข่ง <span class="sec-sub">เรียงจากที่ควรรีบแก้ก่อน</span></h2>
+      </div>
+      <div id="list" class="list"></div>
+    </section>
+    <section class="detail" id="detail" aria-live="polite"></section>
+  </div>
+</div>
+
+<script>
+const CRIT = [
+ ['ความสะอาดหน้าร้าน',4.0,4.5],['ป้ายและการมองเห็นหน้าร้าน',3.5,4.0],['ความสว่างในร้าน',4.5,4.5],
+ ['การจัดเรียงสินค้า',3.5,4.0],['สินค้าครบไม่ขาดชั้น',2.5,4.0],['ป้ายราคาชัดเจน',4.0,4.0],
+ ['โปรโมชั่นเห็นชัด',4.5,3.5],['ความสดของสินค้า',2.5,4.5],['ความสะอาดห้องน้ำ',2.5,3.5],
+ ['พนักงานทักทาย',4.0,4.0],['พนักงานแนะนำสินค้า',3.4,4.0],['ความเร็วแคชเชียร์',3.0,4.5],
+ ['ช่องทางชำระเงิน',4.0,4.0],['ที่จอดรถ',4.0,4.0],['อุณหภูมิในร้าน',3.5,4.5],
+ ['ทางเดินกว้างสบาย',4.0,3.5],['ความหลากหลายสินค้า',4.0,4.0],['บริการหลังชำระเงิน',4.0,4.0]];
+const BR = [
+ {id:'031',dt:0,dc:0,basket:13.9,wt:[2.25,1.75],shop:4,done:77,conf:'ปานกลาง',dates:'24-25 ต.ค. 2569'},
+ {id:'058',dt:-0.3,dc:-0.2,basket:6.2,wt:[3.0,2.5],shop:2,done:90,conf:'ต่ำ',dates:'22 ต.ค. 2569'},
+ {id:'112',dt:0.5,dc:-0.3,basket:9.4,wt:[1.5,2.25],shop:5,done:95,conf:'สูง',dates:'20-21 ต.ค. 2569'},
+ {id:'204',dt:0.2,dc:0.1,basket:-2.1,wt:[2.0,2.0],shop:3,done:84,conf:'ปานกลาง',dates:'18 ต.ค. 2569'}];
+const cl=x=>Math.max(1,Math.min(5,Math.round(x*10)/10));
+BR.forEach(b=>{
+  b.crit=CRIT.map(([n,t,c],i)=>{const k=(i%3)-1;return{n,t:cl(t+b.dt+(b.dt?k*.1:0)),c:cl(c+b.dc-(b.dc?k*.1:0))}});
+  const avg=a=>a.reduce((s,x)=>s+x,0)/a.length;
+  b.ta=avg(b.crit.map(x=>x.t)); b.ca=avg(b.crit.map(x=>x.c));
+  b.w=b.crit.filter(x=>x.t>x.c).length; b.l=b.crit.filter(x=>x.t<x.c).length; b.e=b.crit.length-b.w-b.l;
+  b.gap=b.ca-b.ta;
+  b.st=b.gap>0.3?['p-bad','ต้องรีบแก้']:b.gap>0?['p-warn','เฝ้าระวัง']:['p-good','นำคู่แข่ง'];
+});
+BR.sort((a,b)=>b.gap-a.gap);
+const f2=x=>x.toFixed(2), $=id=>document.getElementById(id);
+let cur=BR[0].id, flt='all';
+
+$('kpis').innerHTML=[['Head-to-Head','4','ส่งแล้วเดือนนี้'],['เยี่ยมสาขา','1','ส่งแล้วเดือนนี้'],['เสียงลูกค้า','3','ตอบกลับเดือนนี้'],['คะแนนสาขาเฉลี่ย','3.85','จาก 5 คะแนน']]
+ .map(([l,v,s])=>`<div class="kpi"><div class="l">${l}</div><div class="v num">${v}</div><div class="s">${s}</div></div>`).join('');
+
+function renderList(){
+  $('list').innerHTML=BR.map(b=>`<button class="bcard" data-id="${b.id}" ${b.id===cur?'aria-current="true"':''}>
+    <span class="name">สาขา ${b.id}</span><span class="pill ${b.st[0]}">${b.st[1]}</span>
+    <span class="scores num"><b class="t">${f2(b.ta)}</b><span>vs</span><b class="c">${f2(b.ca)}</b><span class="wlt">ชนะ ${b.w} · แพ้ ${b.l} · เสมอ ${b.e}</span></span></button>`).join('');
+  document.querySelectorAll('.bcard').forEach(el=>el.onclick=()=>{go(el.dataset.id)});
+}
+function renderDetail(){
+  const b=BR.find(x=>x.id===cur);
+  const rows=b.crit.map(x=>({...x,d:x.c-x.t})).sort((a,b)=>b.d-a.d)
+    .filter(x=>flt==='all'||(flt==='l'&&x.d>0)||(flt==='w'&&x.d<0)||(flt==='e'&&x.d===0));
+  const top=b.crit.map(x=>({...x,d:x.c-x.t})).filter(x=>x.d>0).sort((a,b)=>b.d-a.d).slice(0,3);
+  const bk=b.basket>=0?`ถูกกว่าคู่แข่ง ${b.basket.toFixed(1)}%`:`แพงกว่าคู่แข่ง ${(-b.basket).toFixed(1)}%`;
+  const pill=(d)=>d>0?'<span class="pill p-bad">แพ้</span>':d<0?'<span class="pill p-good">ชนะ</span>':'<span class="pill p-warn">เสมอ</span>';
+  $('detail').innerHTML=`
+   <button class="back" id="back">← กลับไปรายชื่อสาขา</button>
+   <div class="dh"><h2>สาขา ${b.id}</h2><span class="pill ${b.st[0]}">${b.st[1]}</span></div>
+   <div class="meta"><span>ผู้ซื้อตัวอย่าง ${b.shop} คน</span><span>ข้อมูลครบ ${b.done}%</span><span>ความมั่นใจ: ${b.conf}</span><span>${b.dates}</span></div>
+   <div class="vs"><div class="side tj"><div class="big num t">${f2(b.ta)}</div><div class="of">จาก 5 คะแนน</div><div class="who t">เตือนใจ</div></div><div class="x">VS</div>
+     <div class="side cp"><div class="big num c">${f2(b.ca)}</div><div class="of">จาก 5 คะแนน</div><div class="who c">คู่แข่ง</div></div></div>
+   <div class="facts">
+     <div class="fact"><div class="l">ชนะ / แพ้ / เสมอ</div><div class="v num">${b.w} / ${b.l} / ${b.e}</div><div class="s">จาก ${b.crit.length} หัวข้อ</div></div>
+     <div class="fact"><div class="l">ตะกร้าราคา 10 รายการ</div><div class="v">${bk}</div></div>
+     <div class="fact"><div class="l">รอจ่ายเงิน (นาที)</div><div class="v num">${b.wt[0]} vs ${b.wt[1]}</div><div class="s">เตือนใจ vs คู่แข่ง</div></div></div>
+   <h3 class="sec-title">3 เรื่องที่ควรแก้ก่อน</h3>
+   <ol class="prio">${top.length?top.map((x,i)=>`<li><span class="r">${i+1}</span><span>${x.n}</span><span class="gap num">−${x.d.toFixed(1)}</span></li>`).join(''):'<li class="none">ไม่มีหัวข้อที่แพ้คู่แข่ง</li>'}</ol>
+   <h3 class="sec-title">เทียบรายหัวข้อ <span class="sec-sub">เรียงจากที่แพ้มากสุด</span></h3>
+   <div class="legend"><span><i style="background:var(--tj)"></i>เตือนใจ</span><span><i style="background:var(--cp)"></i>คู่แข่ง</span></div>
+   <div class="chips" role="group" aria-label="กรองผล">${[['all','ทั้งหมด'],['l','แพ้'],['w','ชนะ'],['e','เสมอ']].map(([k,t])=>`<button class="chip" data-f="${k}" aria-pressed="${flt===k}">${t}</button>`).join('')}</div>
+   <div class="crit">${rows.map(x=>`<div class="row"><span class="nm">${x.n}</span>${pill(x.d)}
+     <div class="bar"><span class="lb t">เตือนใจ</span><span class="trk t"><i style="width:${x.t*20}%"></i></span><span class="vv num">${x.t.toFixed(1)}</span>
+     <span class="lb c">คู่แข่ง</span><span class="trk c"><i style="width:${x.c*20}%"></i></span><span class="vv num">${x.c.toFixed(1)}</span></div></div>`).join('')||'<p class="sec-sub">ไม่มีหัวข้อในกลุ่มนี้</p>'}</div>`;
+  $('back').onclick=()=>{location.hash='';setView('list')};
+  document.querySelectorAll('.chip').forEach(el=>el.onclick=()=>{flt=el.dataset.f;renderDetail()});
+}
+function setView(v){document.body.dataset.view=v;if(v==='detail')window.scrollTo(0,0)}
+function go(id){cur=id;flt='all';location.hash='b'+id;renderList();renderDetail();setView('detail')}
+function route(){const m=/^#b(\d+)$/.exec(location.hash);if(m&&BR.some(b=>b.id===m[1])){cur=m[1];renderList();renderDetail();setView('detail')}else{renderList();renderDetail();setView('list')}}
+addEventListener('hashchange',route);route();
+</script>
